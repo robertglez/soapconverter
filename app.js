@@ -3,7 +3,6 @@ document.getElementById('numberForm').addEventListener('submit', function(e) {
 
     const number = document.getElementById('numberInput').value;
 
-    // Define the soapRequest variable here, so it's available when used below
     const soapRequest = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -13,7 +12,6 @@ document.getElementById('numberForm').addEventListener('submit', function(e) {
   </soap:Body>
 </soap:Envelope>`;
 
-    // Use the soapRequest in your fetch to the Netlify function
     fetch('/.netlify/functions/proxy', {
         method: 'POST',
         headers: {
@@ -23,11 +21,20 @@ document.getElementById('numberForm').addEventListener('submit', function(e) {
     })
     .then(response => response.text())
     .then(responseText => {
-        // Assuming the SOAP response is directly in text and parsing is needed
-        // to extract the actual content you want to display
+        console.log(responseText); // Add this to log the raw response text
+
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(responseText, "text/xml");
-        const result = xmlDoc.getElementsByTagName("NumberToWordsResult")[0].childNodes[0].nodeValue;
+
+        // Ensure you are using the correct tag name here
+        const resultTag = xmlDoc.getElementsByTagName("NumberToWordsResult")[0];
+        if (!resultTag) {
+            console.error('NumberToWordsResult tag not found');
+            document.getElementById('result').innerText = 'Error: NumberToWordsResult tag not found in the response.';
+            return;
+        }
+
+        const result = resultTag.childNodes[0].nodeValue;
         document.getElementById('result').innerText = `In words: ${result}`;
     })
     .catch(error => {
