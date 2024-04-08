@@ -21,13 +21,11 @@ document.getElementById('numberForm').addEventListener('submit', function(e) {
     })
     .then(response => response.text())
     .then(responseText => {
-        console.log(responseText); // Log the raw response text to help with debugging
-
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(responseText, "text/xml");
-
-        // Attempt to find the NumberToWordsResult element ignoring namespaces
-        const resultTags = xmlDoc.getElementsByTagName("NumberToWordsResult");
+        
+        // Use the namespace URI and local name
+        const resultTags = xmlDoc.getElementsByTagNameNS("http://www.dataaccess.com/webservicesserver/", "NumberToWordsResult");
         if (resultTags.length === 0) {
             console.error('NumberToWordsResult tag not found');
             document.getElementById('result').innerText = 'Error: NumberToWordsResult tag not found in the response.';
@@ -42,4 +40,5 @@ document.getElementById('numberForm').addEventListener('submit', function(e) {
         document.getElementById('result').innerText = 'Error fetching the conversion result.';
     });
 });
+
 
