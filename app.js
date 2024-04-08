@@ -21,20 +21,20 @@ document.getElementById('numberForm').addEventListener('submit', function(e) {
     })
     .then(response => response.text())
     .then(responseText => {
-        console.log(responseText); // Add this to log the raw response text
+        console.log(responseText); // Log the raw response text to help with debugging
 
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(responseText, "text/xml");
 
-        // Ensure you are using the correct tag name here
-        const resultTag = xmlDoc.getElementsByTagName("NumberToWordsResult")[0];
-        if (!resultTag) {
+        // Attempt to find the NumberToWordsResult element ignoring namespaces
+        const resultTags = xmlDoc.getElementsByTagName("NumberToWordsResult");
+        if (resultTags.length === 0) {
             console.error('NumberToWordsResult tag not found');
             document.getElementById('result').innerText = 'Error: NumberToWordsResult tag not found in the response.';
             return;
         }
 
-        const result = resultTag.childNodes[0].nodeValue;
+        const result = resultTags[0].textContent.trim();
         document.getElementById('result').innerText = `In words: ${result}`;
     })
     .catch(error => {
@@ -42,3 +42,4 @@ document.getElementById('numberForm').addEventListener('submit', function(e) {
         document.getElementById('result').innerText = 'Error fetching the conversion result.';
     });
 });
+
